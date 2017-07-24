@@ -1,0 +1,36 @@
+#
+# Container specific configuration
+#
+# NOTICE: This file is rewritten every time container is started!
+#         Any changes to this file will be overwritten.
+#
+
+# Listen on all interfaces.
+listen_addresses='*'
+
+# Sets the planner's assumption about the effective size of the disk cache that is available to a single query.
+# Default: 128MB (or 50% of available memory)
+effective_cache_size = ${POSTGRESQL_EFFECTIVE_CACHE_SIZE}
+
+# Specifies the maximum amount of memory to be used by maintenance operations, such as VACUUM, CREATE INDEX, and
+# ALTER TABLE ADD FOREIGN KEY.
+# Default: 32MB (or 12.5% of available memory)
+maintenance_work_mem = ${POSTGRESQL_MAINTENANCE_WORK_MEM}
+
+# The maximum number of concurrent connections to the database server.
+# Default: 100
+max_connections = ${POSTGRESQL_MAX_CONNECTIONS}
+
+# Sets the maximum number of transactions that can be in the "prepared" state simultaneously. Setting this parameter
+# to zero disables the prepared-transaction feature.
+# Default: 0
+max_prepared_transactions = ${POSTGRESQL_MAX_PREPARED_TRANSACTIONS}
+
+# Sets the amount of memory the database server uses for shared memory buffers.
+# Default: 64MB (or 25% of available memory)
+shared_buffers = ${POSTGRESQL_SHARED_BUFFERS}
+
+# Specifies the amount of memory to be used by internal sort operations and hash tables before writing to temporary
+# disk files.
+# Default: 640kB (or 25% of available memory / `max_connections`)
+work_mem = ${POSTGRESQL_WORK_MEM}

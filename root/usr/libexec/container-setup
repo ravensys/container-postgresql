@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mkdir /var/lib/pgsql/data
+chown postgres:postgres /var/lib/pgsql/data
+chmod 0700 /var/lib/pgsql/data

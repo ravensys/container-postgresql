@@ -1,0 +1,16 @@
+---
+language: bash
+
+sudo: required
+services:
+  - docker
+
+addons:
+  apt:
+    packages:
+      - acl
+
+script:
+  - make test VERSION=9.4
+  - make test VERSION=9.5
+  - make test VERSION=9.6

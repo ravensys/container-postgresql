@@ -1,0 +1,38 @@
+#!/bin/bash
+
+source "${CONTAINER_ENTRYPOINT_PATH}/common.sh"
+source "${CONTAINER_ENTRYPOINT_PATH}/postgresql/common.sh"
+set -o errexit
+set -o nounset
+
+postgresql_export_config_variables
+
+if [ -f "${CONTAINER_ENTRYPOINT_PATH}/postgresql/validate-variables.sh" ]; then
+    log_message "Running environment variables validations ..."
+    source "${CONTAINER_ENTRYPOINT_PATH}/postgresql/validate-variables.sh"
+fi
+
+log_message "Processing PostgreSQL configuration files ..."
+postgresql_generate_config
+
+if ! postgresql_is_initialized; then
+    log_message "PostgreSQL is not initialized. Running PostgreSQL initialization process ..."
+    postgresql_initialize
+
+    if [ -d "${CONTAINER_ENTRYPOINT_PATH}/postgresql/post-init.d" ]; then
+        log_message "Sourcing post-initialization scripts ..."
+        source_scripts "${CONTAINER_ENTRYPOINT_PATH}/postgresql/post-init.d"
+    fi
+else
+    postgresql_start_local
+fi
+
+if [ -f "${CONTAINER_ENTRYPOINT_PATH}/postgresql/update-passwords.sh" ]; then
+    log_message "Updating passwords ..."
+    source "${CONTAINER_ENTRYPOINT_PATH}/postgresql/update-passwords.sh"
+fi
+
+postgresql_stop_local
+postgresql_cleanup_environment
+log_message "Running final exec -- Only PostgreSQL server logs after this point"
+exec postgres -D "${POSTGRESQL_DATADIR}" "$@"

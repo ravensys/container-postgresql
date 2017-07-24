@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+shopt -s nullglob
+
+readonly TESTDIR="$( CDPATH= cd -- "$( dirname -- "$0" )" && pwd -P )"
+readonly COMMONDIR="$( CDPATH= cd -- "$( dirname -- "${TESTDIR}" )/common/test" && pwd -P )"
+
+source "${TESTDIR}/common.sh"
+source "${COMMONDIR}/common.sh"
+
+TEST_SUITE="\
+entrypoint_validations
+general
+config_file
+password_change
+postinit_scripts
+secrets_general
+secrets_priority
+"
+
+function ci_suite_usage() {
+    [ $# -eq 1 ] && echo "$1" >&2
+
+    cat >&2 <<EOHELP
+
+Test suite for PostgreSQL database server Docker image
+
+Environment variables:
+  IMAGE_NAME    Name of Docker image to test
+
+Test cases:
+$( ci_suite_list ${TEST_SUITE} )
+EOHELP
+
+    exit 1
+}
+
+[ $# -eq 1 ] && [ "--help" == "${1:-}" ] && \
+    ci_suite_usage
+[ -n "${IMAGE_NAME:-}" ] || \
+    ci_suite_usage "IMAGE_NAME must be set!"
+
+ci_initialize postgresql_test
+ci_suite_execute ${@:-${TEST_SUITE}}
