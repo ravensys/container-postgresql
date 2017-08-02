@@ -1,5 +1,5 @@
-PostgreSQL 9.5 Docker image
-===========================
+PostgreSQL 9.5 SQL database server Docker image
+===============================================
 
 This container image includes PostgreSQL database server version 9.5 based on CentOS.
 
