@@ -1,6 +1,8 @@
 PostgreSQL database server Docker image
 =======================================
 
+[![Build Stauts](https://api.travis-ci.org/ravensys/container-postgresql.svg?branch=master)](https://travis-ci.org/ravensys/container-postgresql/)
+
 This repository contains Dockerfiles and scripts for PostgreSQL images based on CentOS.
 
 
