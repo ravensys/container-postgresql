@@ -14,3 +14,7 @@ script:
   - make test VERSION=9.4
   - make test VERSION=9.5
   - make test VERSION=9.6
+
+after_success:
+  |-
+    [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "master" ] && curl -H "Content-Type: application/json" --data '{"build": true}' -X POST "${DOCKERHUB_TRIGGER}"
