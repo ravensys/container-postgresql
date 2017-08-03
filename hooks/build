@@ -1,0 +1,5 @@
+#!/bin/bash
+
+IFS="-" read VERSION TARGET <<< "${DOCKER_TAG}"
+
+docker build -t "${IMAGE_NAME}" -f "Dockerfile.${TARGET}" ..
