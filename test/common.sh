@@ -5,6 +5,12 @@
 [ -n "${COMMONDIR:-}" ] || \
     ( echo "Common tests source directory is not set!" && exit 1 )
 
+function ci_volume_set_permissions() {
+    local volume_dir="$1"; shift
+
+    setfacl -m u:26:rwx "${volume_dir}"
+}
+
 function ci_postgresql_build_envs() {
     local docker_args
 
