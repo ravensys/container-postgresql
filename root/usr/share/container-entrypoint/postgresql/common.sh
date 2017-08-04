@@ -3,7 +3,6 @@
 export POSTGRESQL_CONFIG_FILE="/var/lib/pgsql/data/postgresql-container.conf"
 export POSTGRESQL_DATADIR="/var/lib/pgsql/data/pgdata"
 
-postgresql_identifier_maxlen=63
 postgresql_identifier_regex='^[a-zA-Z_][a-zA-Z0-9_]*$'
 postgresql_password_regex='^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$'
 
@@ -25,23 +24,18 @@ function get_secret_mapping() {
 }
 
 function postgresql_cleanup_environment() {
-    unset POSTGRESQL_DATABASE \
+    unset POSTGRESQL_ADMIN_PASSWORD \
+          POSTGRESQL_DATABASE \
           POSTGRESQL_PASSWORD \
-          POSTGRESQL_ADMIN_PASSWORD \
           POSTGRESQL_USER
 }
 
 function postgresql_create_database() {
     local database="$1"; shift
-    local user="${1:-}"
 
     psql --set database="${database}" <<EOSQL
 CREATE DATABASE :"database";
 EOSQL
-
-    if [ -n "${user}" ]; then
-        postgresql_set_owner "${database}" "${user}"
-    fi
 }
 
 function postgresql_create_database_if_not_exists() {
@@ -148,14 +142,15 @@ EOCONF
 
     postgresql_start_local
 
-    local postgresql_user; postgresql_user=$( get_value POSTGRESQL_USER postgres )
+    local postgresql_user; postgresql_user="$( get_value POSTGRESQL_USER postgres )"
     if [ -n "${postgresql_user}" ] && [ "postgres" != "${postgresql_user}" ]; then
         postgresql_create_user "${postgresql_user}"
     fi
 
-    local postgresql_database; postgresql_database=$( get_value POSTGRESQL_DATABASE "" )
+    local postgresql_database; postgresql_database="$( get_value POSTGRESQL_DATABASE '' )"
     if [ -n "${postgresql_database}" ]; then
-        postgresql_create_database "${postgresql_database}" "${postgresql_user}"
+        postgresql_create_database "${postgresql_database}"
+        postgresql_set_owner "${postgresql_database}" "${postgresql_user}"
     fi
 }
 

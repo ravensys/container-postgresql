@@ -51,17 +51,17 @@ function postgresql_validate_variables() {
     local user_specified=0
     local root_specified=0
 
-    local postgresql_admin_password; postgresql_admin_password=$( get_value POSTGRESQL_ADMIN_PASSWORD "" )
-    local postgresql_database; postgresql_database=$( get_value POSTGRESQL_DATABASE "" )
-    local postgresql_password; postgresql_password=$( get_value POSTGRESQL_PASSWORD "" )
-    local postgresql_user; postgresql_user=$( get_value POSTGRESQL_USER "" )
+    local postgresql_admin_password; postgresql_admin_password="$( get_value POSTGRESQL_ADMIN_PASSWORD '' )"
+    local postgresql_database; postgresql_database="$( get_value POSTGRESQL_DATABASE '' )"
+    local postgresql_password; postgresql_password="$( get_value POSTGRESQL_PASSWORD '' )"
+    local postgresql_user; postgresql_user="$( get_value POSTGRESQL_USER '' )"
 
     if [ -n "${postgresql_user}" ] || [ -n "${postgresql_password}" ]; then
         [[ "${postgresql_user}" =~ ${postgresql_identifier_regex} ]] || \
             postgresql_usage "Invalid PostgreSQL user (invalid character or empty)."
 
-        [ ${#postgresql_user} -le ${postgresql_identifier_maxlen} ] || \
-            postgresql_usage "Invalid PostgreSQL user (too long)."
+        [ ${#postgresql_user} -le 63 ] || \
+            postgresql_usage "Invalid PostgreSQL user (too long, max. 63 characters)."
 
         [[ "${postgresql_password:-}" =~ ${postgresql_password_regex} ]] || \
             postgresql_usage "Invalid PostgreSQL password (invalid character or empty)."
@@ -71,14 +71,14 @@ function postgresql_validate_variables() {
 
     if [ -n "${postgresql_admin_password}" ]; then
         [[ "${postgresql_admin_password}" =~ ${postgresql_password_regex} ]] || \
-            postgresql_usage "Invalid PostgreSQL root password (invalid character or empty)."
+            postgresql_usage "Invalid PostgreSQL admin password (invalid character or empty)."
 
         root_specified=1
     fi
 
     if [ ${user_specified} -eq 1 ] && [ "postgres" == "${postgresql_user}" ]; then
         [ ${root_specified} -eq 0 ] || \
-            postgresql_usage "When POSTGRESQL_USER is set to 'postgres' root password must be set only in POSTGRESQL_PASSWORD."
+            postgresql_usage "When POSTGRESQL_USER is set to 'postgres' admin password must be set only in POSTGRESQL_PASSWORD."
 
         user_specified=0
         root_specified=1
@@ -93,8 +93,8 @@ function postgresql_validate_variables() {
     if [ -n "${postgresql_database}" ]; then
         [[ "${postgresql_database}" =~ ${postgresql_identifier_regex} ]] || \
             postgresql_usage "Invalid PostgreSQL database name (invalid character or empty)."
-        [ ${#postgresql_database} -le ${postgresql_identifier_maxlen} ] || \
-            postgresql_usage "Invalid PostgreSQL database name (too long)."
+        [ ${#postgresql_database} -le 63 ] || \
+            postgresql_usage "Invalid PostgreSQL database name (too long, max. 63 characters)."
     fi
 }
 

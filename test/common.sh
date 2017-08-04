@@ -58,9 +58,9 @@ function ci_postgresql_build_secrets() {
 function ci_postgresql_cmd() {
     local ip="$1"; shift
     local user="$1"; shift
-    local pass="$1"; shift
+    local password="$1"; shift
 
-    docker run --rm -e PGPASSWORD="${pass}" "${IMAGE_NAME}" \
+    docker run --rm -e PGPASSWORD="${password}" "${IMAGE_NAME}" \
         psql "postgresql://${user}@${ip}:5432/testdb" "$@"
 }
 
@@ -88,14 +88,14 @@ function ci_postgresql_container() {
 function ci_postgresql_wait_connection() {
     local container="$1"; shift
     local user="$1"; shift
-    local pass="$1"; shift
+    local password="$1"; shift
     local max_attempts="${1:-20}"
 
     local i
     local container_ip; container_ip="$( ci_container_get_ip "${container}" )"
     for i in $( seq ${max_attempts} ); do
         echo " ------> Connection attempt to container [ ${container} ] < ${i} / ${max_attempts} >"
-        if ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "SELECT 1;"; then
+        if ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "SELECT 1;"; then
             return
         fi
         sleep 2
@@ -142,35 +142,35 @@ function ci_assert_local_access() {
 function ci_assert_login_access() {
     local container="$1"; shift
     local user="$1"; shift
-    local pass="$1"; shift
+    local password="$1"; shift
     local success="$1"; shift
 
-    if ci_postgresql_cmd $( ci_container_get_ip "${container}" ) "${user}" "${pass}" <<< "SELECT 1;"; then
+    if ci_postgresql_cmd $( ci_container_get_ip "${container}" ) "${user}" "${password}" <<< "SELECT 1;"; then
         if $success; then
-            echo "${user}(${pass}) access granted as expected."
+            echo "${user}(${password}) access granted as expected."
             return
         fi
     else
         if ! $success; then
-            echo "${user}(${pass}) access denied as expected."
+            echo "${user}(${password}) access denied as expected."
             return
         fi
     fi
 
-    echo "${user}(${pass}) login assertion failed."
+    echo "${user}(${password}) login assertion failed."
     exit 1
 }
 
 function ci_assert_postgresql() {
     local container="$1"; shift
     local user="$1"; shift
-    local pass="$1"; shift
+    local password="$1"; shift
 
     local container_ip; container_ip="$( ci_container_get_ip "${container}" )"
-    ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "CREATE EXTENSION 'uuid-ossp';"
-    ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "CREATE TABLE testtbl (testcol1 VARCHAR(20), testcol2 VARCHAR(20));"
-    ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "INSERT INTO testtbl VALUES('foo1', 'bar1');"
-    ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "INSERT INTO testtbl VALUES('foo2', 'bar2');"
-    ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "SELECT * FROM testtbl;"
-    ci_postgresql_cmd "${container_ip}" "${user}" "${pass}" <<< "DROP TABLE testtbl;"
+    ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "CREATE EXTENSION 'uuid-ossp';"
+    ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "CREATE TABLE testtbl (testcol1 VARCHAR(20), testcol2 VARCHAR(20));"
+    ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "INSERT INTO testtbl VALUES('foo1', 'bar1');"
+    ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "INSERT INTO testtbl VALUES('foo2', 'bar2');"
+    ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "SELECT * FROM testtbl;"
+    ci_postgresql_cmd "${container_ip}" "${user}" "${password}" <<< "DROP TABLE testtbl;"
 }
