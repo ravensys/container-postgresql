@@ -1,7 +1,7 @@
 FROM centos:7
 
 #
-# PostgreSQL database server Docker image
+# PostgreSQL SQL database server Docker image
 #
 # Environment variables (container initialization):
 #  * $POSTGRESQL_ADMIN_PASSWORD  password for the `postgres` admin account

@@ -3,7 +3,7 @@ PostgreSQL 9.6 SQL database server Docker image
 
 This container image includes PostgreSQL database server version 9.6 based on CentOS.
 
-The CentOS image is available on [Docker Hub](https://hub.docker.com/r/ravensys/postgres) as 
+The CentOS image is available on [Docker Hub](https://hub.docker.com/r/ravensys/postgresql) as 
 `ravensys/postgresql:9.6-centos7`.
 
 
