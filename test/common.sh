@@ -116,7 +116,7 @@ function ci_assert_config_option() {
     local option_value="$1"; shift
 
     docker exec $( ci_container_get_cid "${container}" ) \
-        grep -qx "${option_name} = ${option_value}" /var/lib/pgsql/data/postgresql-container.conf
+        bash -c "grep -qx '${option_name} = ${option_value}' /var/lib/pgsql/data/postgresql-container.conf"
 }
 
 function ci_assert_configuration() {

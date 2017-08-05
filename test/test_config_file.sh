@@ -27,10 +27,9 @@ function ci_case_config_file() {
 
 
     echo " ---> Testing configuration auto-tuning capabilities"
+    ci_postgresql_config_defaults
     POSTGRESQL_EFFECTIVE_CACHE_SIZE=256MB
     POSTGRESQL_MAINTENANCE_WORK_MEM=64MB
-    POSTGRESQL_MAX_CONNECTIONS=100
-    POSTGRESQL_MAX_PREPARED_TRANSACTIONS=0
     POSTGRESQL_SHARED_BUFFERS=128MB
     POSTGRESQL_WORK_MEM=1310kB
 
