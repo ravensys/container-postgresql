@@ -5,7 +5,7 @@ function postgresql_usage() {
 
     cat >&2 <<EOHELP
 
-PostgreSQL database server Docker image
+PostgreSQL SQL database server Docker image
 
 Environment variables (container initialization):
   POSTGRESQL_ADMIN_PASSWORD     Password for the admin \`postgres\` account
